@@ -4,53 +4,28 @@ import { Op } from 'sequelize';
 
 class CommentService {
   
-  async createComment(text, id) {
-    const comm = await Comment.create({ 
-      text,
-      userId: id 
-    });
-    return comm;
+  async createComment(doc) {
+    console.log(doc.text)
+    return await Comment.create({text: doc.text, userId: doc.id})
   }
 
-  async findComment(userId) {
-      //const offset = (page - 1) * pageSize;
+  async getAllComments() {
       const comments = await Comment.findAll({
-        where: { userId }, 
-        include: {
-          model: User, 
-          attributes: ['id'] 
-        }
-        // limit: pageSize,
-        // offset: offset
+        attributes: {exclude: ["userId", "updatedAt", "createdAt"]}, include: {model: User, attributes: ["id", "login"]}
       });
 
       return comments;
   }
 
-  async editComment(text, id) {
-    const editedComment = await Comment.findByPk(id)
-    if (!editedComment)
-    {
-      return false;
-    }
-    else
-    {
-      editedComment.text = text;
-      await editedComment.save()
-    }
-    return editedComment;
+  async editComment(doc) {
+    const editedComment = await Comment.findByPk(doc.id)
+    await editedComment.update({text: doc.text})
+    await editedComment.save()
+    return editedComment
   }
 
   async delComment(id) {
-    const deletedComment = await Comment.findByPk(id)
-    if (!deletedComment)
-    {
-      return false;
-    }
-    else
-    {
-      await deletedComment.destroy()
-    }
+    Comment.destroy({ where: { id: id } });
   }
 
   async delComments(ids) {

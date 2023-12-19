@@ -15,7 +15,7 @@ export const userInitter = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    Second_name: {
+    secondName: {
       type: DataTypes.STRING,
       allowNull: false
     },
